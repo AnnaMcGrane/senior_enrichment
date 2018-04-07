@@ -2,9 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-const Students = ({ students }) => {
+
+const Students = ({ students, count }) => {
     return (
         <ul>
+        Students { count }
         {
             students.map( student => {
                 return (
@@ -18,10 +20,11 @@ const Students = ({ students }) => {
     )
 }
 
-const mapStateToProps = ({ students }) => {
-    console.log({students})
+const mapStateToProps = ({ students } ) => {
+    console.log({students}, 'students.js')
     return {
-        students
+        students,
+        count: students.length
     }
 }
 

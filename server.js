@@ -99,46 +99,36 @@ const Student = conn.define('student', {
 
 //SYNC AND SEED THE DATABASE
 
-// Student.belongsTo(School)
-// School.hasMany(Student);
-
+Student.belongsTo(School)
+School.hasMany(Student)
 
 conn.sync({ force: true })
-  .then( ()=> Promise.all([
-    Student.create({firstName: 'Anna', lastName: 'McGrane', GPA: 6, email: 'anna@nyu.edu'}),
-    Student.create({firstName: 'Gavin', lastName: 'McGrane', GPA: 8, email: 'gavin@lowell.edu'}),
-    Student.create({firstName: 'Sally', lastName: 'McGrane', GPA: 7, email: 'sally@ucb.edu'}),
-    ])
-//   .then(([NYU, UCB, Lowell]) => {
-//         return Promise.all ([
-//             Anna.setSchool(NYU),
-//             Gavin.setSchool(Lowell),
-//             Sally.setSchool(UCB)
-//         ])
-//     })
-);
+    .then( ()=> Promise.all([
+        Student.create({firstName: 'Anna', lastName: 'McGrane', GPA: 6, email: 'anna@nyu.edu'}),
+        Student.create({firstName: 'Gavin', lastName: 'McGrane', GPA: 8, email: 'gavin@lowell.edu'}),
+        Student.create({firstName: 'Sally', lastName: 'McGrane', GPA: 7, email: 'sally@ucb.edu'}),
+        School.create({ name: 'NYU', imageURL: ''}),
+        School.create({ name: 'Lowell', imageURL: ''}),
+        School.create({ name: 'UCB', imageURL: ''})
+        ])
+    .then(([anna, gavin, sally, nyu, lowell, ucb ]) => {
+        return Promise.all([
+            anna.setSchool(nyu),
+            gavin.setSchool(nyu),
+            sally.setSchool(ucb)
+        ])     
+    }))
 
-
-
-
-// School.create({ name: NYU, image: ''}),
-// School.create({ name: Lowell, image: ''}),
-// School.create({ name: UCB, image: ''})
-
-
-
-
-
-
+// why doesn't my db update? doesn't force: true force reload? so I could add categories
 
 //ROUTES - SCHOOL
 app.get('/api/schools', (req, res, next)=> {
     School.findAll()
       .then( schools => res.send(schools))
       .catch(next);
-  })
+})
   
-  app.put('/api/schools/:id', (req, res, next)=> {
+app.put('/api/schools/:id', (req, res, next)=> {
     School.findById(req.params.id)
       .then( school => {
         Object.assign(school, req.body)
@@ -146,19 +136,19 @@ app.get('/api/schools', (req, res, next)=> {
       })
       .then( school => res.send(school))
       .catch(next);
-  })
+})
   
-  app.delete('/api/schools/:id', (req, res, next)=> {
+app.delete('/api/schools/:id', (req, res, next)=> {
     School.findById(req.params.id)
       .then( school => {
         return school.destroy();
       })
       .then( () => res.sendStatus(204))
       .catch(next);
-  })
+})
   
-  app.post('/api/schools', (req, res, next)=> {
+app.post('/api/schools', (req, res, next)=> {
     School.create(req.body)
       .then( school => res.send(school))
       .catch(next);
-  })
+})
