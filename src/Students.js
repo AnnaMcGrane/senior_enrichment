@@ -5,18 +5,21 @@ import { Link } from 'react-router-dom'
 
 const Students = ({ students, count }) => {
     return (
-        <ul>
-        Students { count }
-        {
-            students.map( student => {
-                return (
-                    <li key={ student.id }>
-                        <Link to={`/students/${student.id}`}>{ student.fullName }</Link>
-                    </li>
-                )
-            })
-        }
+       <div>
+       Total student population: { count }
+            <ul>
+                {
+                students.map( student => {
+                    return (
+                        <li key={ student.id }>
+                            <Link to={`/students/${student.id}`}>{ student.fullName }</Link>
+                        </li>
+                    )
+                })
+            }
         </ul>
+        <Link to= '/students/create'> Create New Student </Link>
+        </div>
     )
 }
 

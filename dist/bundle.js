@@ -1985,7 +1985,7 @@ var createTransitionManager = function createTransitionManager() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.deleteStudent = exports.saveStudent = exports.loadSchools = exports.loadStudents = undefined;
+exports.deleteStudent = exports.newStudent = exports.saveStudent = exports.loadSchools = exports.loadStudents = undefined;
 
 var _redux = __webpack_require__(35);
 
@@ -1999,10 +1999,13 @@ var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 //STUDENT ACTIONS
 var SET_STUDENTS = 'SET_STUDENTS';
 var UPDATE_STUDENT = 'UPDATE_STUDENT';
 var DELETE_STUDENT = 'DELETE_STUDENT';
+var CREATE_STUDENT = 'CREATE_STUDENT';
 
 //SCHOOL ACTIONS
 var SET_SCHOOLS = 'SET_SCHOOLS';
@@ -2025,6 +2028,9 @@ var studentsReducer = function studentsReducer() {
             state = state.filter(function (student) {
                 return student.id !== action.student.id;
             });
+            break;
+        case CREATE_STUDENT:
+            state = [].concat(_toConsumableArray(state), [action.student]);
             break;
     }
     return state;
@@ -2089,6 +2095,22 @@ var saveStudent = exports.saveStudent = function saveStudent(student, history) {
         };
     }
 };
+
+var newStudent = exports.newStudent = function newStudent(student, history) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/students', student).then(function (result) {
+            return result.data;
+        }).then(function (student) {
+            return dispatch({
+                type: CREATE_STUDENT,
+                student: student
+            });
+        }).then(function () {
+            history.push('/students');
+        });
+    };
+};
+
 //DELETE
 var deleteStudent = exports.deleteStudent = function deleteStudent(id, history) {
     return function (dispatch) {
@@ -24569,7 +24591,7 @@ var App = function (_React$Component) {
                     _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/schools', component: _Schools2.default }),
                     _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/students/:id', render: function render(_ref) {
                             var match = _ref.match;
-                            return _react2.default.createElement(_Student2.default, { id: match.params.id * 1 });
+                            return _react2.default.createElement(_Student2.default, { id: match.params.id });
                         } }),
                     _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/schools/:id', render: function render(_ref2) {
                             var match = _ref2.match;
@@ -27654,12 +27676,13 @@ var Student = function (_React$Component) {
         _this.onSave = _this.onSave.bind(_this);
         _this.onChangeStudent = _this.onChangeStudent.bind(_this);
         _this.onDelete = _this.onDelete.bind(_this);
+        _this.onCreate = _this.onCreate.bind(_this);
 
         _this.state = {
-            firstName: student.firstName,
-            lastName: student.lastName,
-            email: student.email,
-            GPA: student.GPA
+            firstName: student.firstName ? student.firstName : '',
+            lastName: student.lastName ? student.lastName : 'McGrane',
+            email: student.email ? student.email : '@pacerpro.com',
+            GPA: student.GPA ? student.GPA : '4.0'
         };
         return _this;
     }
@@ -27672,6 +27695,13 @@ var Student = function (_React$Component) {
             this.props.saveStudent(student);
         }
     }, {
+        key: 'onCreate',
+        value: function onCreate(ev) {
+            ev.preventDefault();
+            var student = { firstName: this.state.firstName, lastName: this.state.lastName, email: this.state.email, GPA: this.state.GPA };
+            this.props.newStudent(student);
+        }
+    }, {
         key: 'onDelete',
         value: function onDelete(ev) {
             console.log(this.props.id, 'onDelete');
@@ -27680,7 +27710,6 @@ var Student = function (_React$Component) {
     }, {
         key: 'onChangeStudent',
         value: function onChangeStudent(ev) {
-            console.log(ev, 'this the change student event');
             this.setState({ firstName: ev.target.value });
         }
         // componentWillReceiveProps(nextProps){
@@ -27693,7 +27722,8 @@ var Student = function (_React$Component) {
         value: function render() {
             var _props = this.props,
                 student = _props.student,
-                students = _props.students;
+                students = _props.students,
+                id = _props.id;
             var _state = this.state,
                 firstName = _state.firstName,
                 lastName = _state.lastName,
@@ -27704,7 +27734,6 @@ var Student = function (_React$Component) {
                 return _react2.default.createElement(
                     'div',
                     null,
-                    firstName,
                     _react2.default.createElement(
                         'ul',
                         null,
@@ -27719,27 +27748,6 @@ var Student = function (_React$Component) {
                                 ' '
                             ),
                             _react2.default.createElement(
-                                'li',
-                                null,
-                                ' Last name:',
-                                _react2.default.createElement('input', { value: lastName, onChange: this.onChangeStudent }),
-                                ' '
-                            ),
-                            _react2.default.createElement(
-                                'li',
-                                null,
-                                ' GPA:',
-                                _react2.default.createElement('input', { value: GPA }),
-                                ' '
-                            ),
-                            _react2.default.createElement(
-                                'li',
-                                null,
-                                ' email:',
-                                _react2.default.createElement('input', { value: email }),
-                                ' '
-                            ),
-                            _react2.default.createElement(
                                 'button',
                                 null,
                                 ' Save Changes '
@@ -27749,6 +27757,36 @@ var Student = function (_React$Component) {
                             'button',
                             { onClick: this.onDelete },
                             ' Delete '
+                        )
+                    )
+                );
+            }
+            if (id === 'create') {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'ul',
+                        null,
+                        _react2.default.createElement(
+                            'h2',
+                            null,
+                            'Enroll a new student '
+                        ),
+                        _react2.default.createElement(
+                            'form',
+                            { onSubmit: this.onCreate },
+                            _react2.default.createElement(
+                                'li',
+                                null,
+                                ' First name:',
+                                _react2.default.createElement('input', { value: firstName, onChange: this.onChangeStudent })
+                            ),
+                            _react2.default.createElement(
+                                'button',
+                                null,
+                                ' Save Changes '
+                            )
                         )
                     )
                 );
@@ -27765,15 +27803,20 @@ var Student = function (_React$Component) {
     return Student;
 }(_react2.default.Component);
 
+// <li> Last name:<input value = { lastName } ></input> </li>
+// <li> GPA:<input value = { GPA }></input> </li>
+// <li> email:<input value = { email }></input> </li>       
+
 var mapStateToProps = function mapStateToProps(_ref, _ref2) {
     var students = _ref.students;
     var id = _ref2.id;
 
     var student = students.find(function (student) {
-        return student.id === id;
+        return student.id === id * 1;
     });
     return {
-        student: student
+        student: student,
+        id: id
     };
 };
 
@@ -27786,6 +27829,9 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
         },
         deleteStudent: function deleteStudent(student) {
             return dispatch((0, _store.deleteStudent)(student.id, history));
+        },
+        newStudent: function newStudent(student) {
+            return dispatch((0, _store.newStudent)(student, history));
         }
     };
 };
@@ -28735,21 +28781,30 @@ var Students = function Students(_ref) {
         count = _ref.count;
 
     return _react2.default.createElement(
-        'ul',
+        'div',
         null,
-        'Students ',
+        'Total student population: ',
         count,
-        students.map(function (student) {
-            return _react2.default.createElement(
-                'li',
-                { key: student.id },
-                _react2.default.createElement(
-                    _reactRouterDom.Link,
-                    { to: '/students/' + student.id },
-                    student.fullName
-                )
-            );
-        })
+        _react2.default.createElement(
+            'ul',
+            null,
+            students.map(function (student) {
+                return _react2.default.createElement(
+                    'li',
+                    { key: student.id },
+                    _react2.default.createElement(
+                        _reactRouterDom.Link,
+                        { to: '/students/' + student.id },
+                        student.fullName
+                    )
+                );
+            })
+        ),
+        _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/students/create' },
+            ' Create New Student '
+        )
     );
 };
 

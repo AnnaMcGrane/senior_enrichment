@@ -25,7 +25,7 @@ class App extends React.Component{
                 <Nav />
                 <Route exact path='/students' component = { Students } />
                 <Route exact path='/schools' component = { Schools } />
-                <Route exact path='/students/:id' render ={({ match })=> <Student id= { match.params.id*1 }/>} />
+                <Route exact path='/students/:id' render ={({ match })=> <Student id= { match.params.id }/>} />
                 <Route exact path='/schools/:id' render ={({ match })=> <School id= { match.params.id*1 }/>} />
               </div>
             </Router>

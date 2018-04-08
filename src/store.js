@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 const SET_STUDENTS = 'SET_STUDENTS'
 const UPDATE_STUDENT = 'UPDATE_STUDENT'
 const DELETE_STUDENT = 'DELETE_STUDENT'
+const CREATE_STUDENT = 'CREATE_STUDENT'
 
 //SCHOOL ACTIONS
 const SET_SCHOOLS = 'SET_SCHOOLS'
@@ -15,13 +16,16 @@ const studentsReducer = (state = [], action)=> {
     switch(action.type){
       case SET_STUDENTS:
         state = action.students;
-        break;  
+        break 
       case UPDATE_STUDENT:
         state = state.map( student => student.id === action.student.id ? action.student : student )
-        break;
+        break
       case DELETE_STUDENT:
         state = state.filter( student => student.id !== action.student.id); 
-        break;
+        break
+      case CREATE_STUDENT:
+        state = [... state, action.student]
+        break
     }
     return state;
 };
@@ -29,10 +33,10 @@ const studentsReducer = (state = [], action)=> {
 const schoolsReducer = (state=[], action)=> {
     switch(action.type){
         case SET_SCHOOLS:
-          state = action.schools;
-          break;  
+          state = action.schools
+          break 
     }
-    return state;
+    return state
 }
   
 const reducer = combineReducers({
@@ -80,6 +84,22 @@ export const saveStudent = (student, history)=> {
         }
     }
 }
+
+export const newStudent = (student, history)=> {
+    return(dispatch) => {
+        return axios.post('/api/students', student)
+            .then(result => result.data)
+            .then(student => dispatch ({
+                type: CREATE_STUDENT,  
+                student
+                })
+            )
+            .then (() => {
+                history.push('/students')
+        })
+    }
+}
+
 //DELETE
 export const deleteStudent = (id, history)=> {
     return (dispatch)=> {
