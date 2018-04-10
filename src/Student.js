@@ -6,7 +6,6 @@ import { saveStudent, deleteStudent } from './store'
 class Student extends React.Component {
     constructor(student){
         super()
-        console.log(student, 'constructor')
         
         this.onSave = this.onSave.bind(this)
         this.onDelete = this.onDelete.bind(this)
@@ -18,39 +17,36 @@ class Student extends React.Component {
         this.onChangeSchool = this.onChangeSchool.bind(this)
         
         this.state = {
-            firstName: student.firstName ? student.firstName : '',
-            lastName: student.lastName ? student.lastName : '',
-            email: student.email ? student.email : '@pacer',
+            firstName: student.firstName ? student.firstName : 'enter',
+            lastName: student.lastName ? student.lastName : 'enter',
+            email: student.email ? student.email : 'enter',
             GPA: student.GPA ? student.GPA : '4.0', 
-            imageURL: student.imageURL ? student.imageURL : '',
+            imageURL: student.imageURL ? student.imageURL : 'enter',
             schoolId: student.schoolId ? student.schoolId : 3 
         }
     }
     onSave(ev){
-        console.log('calling onSave', ev)
+
         ev.preventDefault()
         const student = { id: this.props.id, firstName: this.state.firstName, lastName: this.state.lastName, email: this.state.email, GPA: this.state.GPA, imageURL: this.state.imageURL, schoolId: this.state.schoolId}
         this.props.saveStudent(student)
     }
     onDelete(ev){
-        console.log('calling onDelete')
         this.props.deleteStudent({ id: this.props.id })
     }
     onChangeFirst(ev){
-        console.log('calling on ChangeFirst', ev.target.value)
         this.setState({ firstName: ev.target.value })
     }
     onChangeLast(ev){
-        console.log('calling on ChangeLast',ev.target.value)
         this.setState({ lastName: ev.target.value })
     }
     onChangeImage(ev){
-        console.log('calling on ChangeImage', ev.target.value)
         this.setState({ imageURL: ev.target.value })
     }
     onChangeSchool(ev){
-        console.log('calling on ChangeSchool', schoolId)
-        this.setState({ schoolId: ev.target.value })
+        const schoolName = ev.target.value
+        const school = this.props.schools.find(school => school.name === schoolName)
+        this.setState({ schoolId: school.id})
     }
     // componentWillReceiveProps(nextProps){
     //     console.log(nextProps, 'from componentwillreceiveprops')
@@ -67,7 +63,7 @@ class Student extends React.Component {
             return (
                 <div>
                 <ul>
-                <h3>{ student.fullName }</h3>
+                <h3>{ student.fullName }, schoolId {schoolId}, GPA {GPA}</h3>
                 <h4> Edit { student.firstName }'s info here </h4>
                     <form onSubmit ={ this.onSave }>
                         <li key= { student.firstName } > 
@@ -84,10 +80,10 @@ class Student extends React.Component {
 
                         <li key= { GPA }> 
                              School:    
-                             <select>
+                             <select onChange = { this.onChangeSchool }>
                              <option> None </option>
                                 {
-                                    schools.map (school => <option value={ schoolId } onChange = { this.onChangeSchool }> { school.name } </option>)
+                                    schools.map (school => <option value = { student.name } > { school.name } </option>)
                                 }
                              </select>
                          </li> 

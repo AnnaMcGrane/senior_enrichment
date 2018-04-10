@@ -27,19 +27,15 @@ class StudentCreate extends React.Component {
         this.props.newStudent(this.state)
     }
     onChangeFirst(ev){
-        console.log('calling on ChangeFirst', ev.target.value)
         this.setState({ firstName: ev.target.value })
     }
     onChangeLast(ev){
-        console.log('calling on ChangeLast',ev.target.value)
         this.setState({ lastName: ev.target.value })
     }
     onChangeImage(ev){
-        console.log('calling on ChangeImage', ev.target.value)
         this.setState({ imageURL: ev.target.value })
     }
     onChangeSchool(ev){
-        console.log('calling on ChangeSchool', ev.target.value)
         this.setState({ schoolId: ev.target.value })
     }
     render(){
@@ -48,7 +44,7 @@ class StudentCreate extends React.Component {
         return (
                 <div>
                 <ul>
-                <h3> Create a new student</h3>
+                <h3> Create new student</h3>
                     <form onSubmit ={ this.onSave }>
                         <li> 
                             First name: <input value = { firstName } onChange = { this.onChangeFirst }></input> 

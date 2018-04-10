@@ -27684,8 +27684,6 @@ var Student = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (Student.__proto__ || Object.getPrototypeOf(Student)).call(this));
 
-        console.log(student, 'constructor');
-
         _this.onSave = _this.onSave.bind(_this);
         _this.onDelete = _this.onDelete.bind(_this);
 
@@ -27695,11 +27693,11 @@ var Student = function (_React$Component) {
         _this.onChangeSchool = _this.onChangeSchool.bind(_this);
 
         _this.state = {
-            firstName: student.firstName ? student.firstName : '',
-            lastName: student.lastName ? student.lastName : '',
-            email: student.email ? student.email : '@pacer',
+            firstName: student.firstName ? student.firstName : 'enter',
+            lastName: student.lastName ? student.lastName : 'enter',
+            email: student.email ? student.email : 'enter',
             GPA: student.GPA ? student.GPA : '4.0',
-            imageURL: student.imageURL ? student.imageURL : '',
+            imageURL: student.imageURL ? student.imageURL : 'enter',
             schoolId: student.schoolId ? student.schoolId : 3
         };
         return _this;
@@ -27708,7 +27706,7 @@ var Student = function (_React$Component) {
     _createClass(Student, [{
         key: 'onSave',
         value: function onSave(ev) {
-            console.log('calling onSave', ev);
+
             ev.preventDefault();
             var student = { id: this.props.id, firstName: this.state.firstName, lastName: this.state.lastName, email: this.state.email, GPA: this.state.GPA, imageURL: this.state.imageURL, schoolId: this.state.schoolId };
             this.props.saveStudent(student);
@@ -27716,32 +27714,31 @@ var Student = function (_React$Component) {
     }, {
         key: 'onDelete',
         value: function onDelete(ev) {
-            console.log('calling onDelete');
             this.props.deleteStudent({ id: this.props.id });
         }
     }, {
         key: 'onChangeFirst',
         value: function onChangeFirst(ev) {
-            console.log('calling on ChangeFirst', ev.target.value);
             this.setState({ firstName: ev.target.value });
         }
     }, {
         key: 'onChangeLast',
         value: function onChangeLast(ev) {
-            console.log('calling on ChangeLast', ev.target.value);
             this.setState({ lastName: ev.target.value });
         }
     }, {
         key: 'onChangeImage',
         value: function onChangeImage(ev) {
-            console.log('calling on ChangeImage', ev.target.value);
             this.setState({ imageURL: ev.target.value });
         }
     }, {
         key: 'onChangeSchool',
         value: function onChangeSchool(ev) {
-            console.log('calling on ChangeSchool', schoolId);
-            this.setState({ schoolId: ev.target.value });
+            var schoolName = ev.target.value;
+            var school = this.props.schools.find(function (school) {
+                return school.name === schoolName;
+            });
+            this.setState({ schoolId: school.id });
         }
         // componentWillReceiveProps(nextProps){
         //     console.log(nextProps, 'from componentwillreceiveprops')
@@ -27753,8 +27750,6 @@ var Student = function (_React$Component) {
     }, {
         key: 'render',
         value: function render() {
-            var _this2 = this;
-
             var _props = this.props,
                 student = _props.student,
                 students = _props.students,
@@ -27779,7 +27774,11 @@ var Student = function (_React$Component) {
                         _react2.default.createElement(
                             'h3',
                             null,
-                            student.fullName
+                            student.fullName,
+                            ', schoolId ',
+                            schoolId,
+                            ', GPA ',
+                            GPA
                         ),
                         _react2.default.createElement(
                             'h4',
@@ -27815,7 +27814,7 @@ var Student = function (_React$Component) {
                                 'School:',
                                 _react2.default.createElement(
                                     'select',
-                                    null,
+                                    { onChange: this.onChangeSchool },
                                     _react2.default.createElement(
                                         'option',
                                         null,
@@ -27824,7 +27823,7 @@ var Student = function (_React$Component) {
                                     schools.map(function (school) {
                                         return _react2.default.createElement(
                                             'option',
-                                            { value: schoolId, onChange: _this2.onChangeSchool },
+                                            { value: student.name },
                                             ' ',
                                             school.name,
                                             ' '
@@ -28967,25 +28966,21 @@ var StudentCreate = function (_React$Component) {
     }, {
         key: 'onChangeFirst',
         value: function onChangeFirst(ev) {
-            console.log('calling on ChangeFirst', ev.target.value);
             this.setState({ firstName: ev.target.value });
         }
     }, {
         key: 'onChangeLast',
         value: function onChangeLast(ev) {
-            console.log('calling on ChangeLast', ev.target.value);
             this.setState({ lastName: ev.target.value });
         }
     }, {
         key: 'onChangeImage',
         value: function onChangeImage(ev) {
-            console.log('calling on ChangeImage', ev.target.value);
             this.setState({ imageURL: ev.target.value });
         }
     }, {
         key: 'onChangeSchool',
         value: function onChangeSchool(ev) {
-            console.log('calling on ChangeSchool', ev.target.value);
             this.setState({ schoolId: ev.target.value });
         }
     }, {
@@ -29014,7 +29009,7 @@ var StudentCreate = function (_React$Component) {
                     _react2.default.createElement(
                         'h3',
                         null,
-                        ' Create a new student'
+                        ' Create new student'
                     ),
                     _react2.default.createElement(
                         'form',
