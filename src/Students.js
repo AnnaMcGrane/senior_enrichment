@@ -9,16 +9,18 @@ const Students = ({ students, count }) => {
        Total student population: { count }
             <ul>
                 {
-                students.map( student => {
+                  students.map( student => {
                     return (
                         <li key={ student.id }>
                             <Link to={`/students/${student.id}`}>{ student.fullName }</Link>
                         </li>
                     )
                 })
-            }
+                }
         </ul>
-        <Link to= '/students/create'> Create New Student </Link>
+        <Link to= '/students/create'>
+            <button> Enroll a new student</button> 
+        </Link>
         </div>
     )
 }

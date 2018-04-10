@@ -6,8 +6,10 @@ import { connect } from 'react-redux'
 import Nav from './Nav'
 import Student from './Student'
 import Students from './Students'
+import StudentCreate from './StudentCreate'
 import School from './School'
 import Schools from './Schools'
+
 
 //STORE IMPORT
 import store from './store'
@@ -25,8 +27,9 @@ class App extends React.Component{
                 <Nav />
                 <Route exact path='/students' component = { Students } />
                 <Route exact path='/schools' component = { Schools } />
-                <Route exact path='/students/:id' render ={({ match })=> <Student id= { match.params.id }/>} />
+                <Route exact path='/students/:id' render ={({ match })=> <Student id= { match.params.id*1 }/>} />
                 <Route exact path='/schools/:id' render ={({ match })=> <School id= { match.params.id*1 }/>} />
+                <Route exact path='/students/create' component = { StudentCreate } />
               </div>
             </Router>
         );

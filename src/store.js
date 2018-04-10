@@ -1,6 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import axios from 'axios';
 import thunk from 'redux-thunk';
+import createLogger from 'redux-logger'
 
 //STUDENT ACTIONS
 const SET_STUDENTS = 'SET_STUDENTS'
@@ -43,6 +44,7 @@ const reducer = combineReducers({
     students: studentsReducer,
     schools: schoolsReducer
 });
+
 //AXIOS CALLS  
 export const loadStudents = ()=> {
     return(dispatch)=> {
@@ -67,7 +69,7 @@ export const loadSchools = ()=> {
         )
     }
 }
-//SAVE
+//MODIFY AN EXISTING STUDENT (SHOULD RENAME THIS BC SAVE IS UNCLEAR)
 export const saveStudent = (student, history)=> {
     if(student.id){
         return(dispatch)=> {
@@ -84,7 +86,7 @@ export const saveStudent = (student, history)=> {
         }
     }
 }
-
+//CREATE A NEW STUDENT
 export const newStudent = (student, history)=> {
     return(dispatch) => {
         return axios.post('/api/students', student)
@@ -102,6 +104,7 @@ export const newStudent = (student, history)=> {
 
 //DELETE
 export const deleteStudent = (id, history)=> {
+    console.log(id, 'deleteStudent from store')
     return (dispatch)=> {
         return axios.delete(`/api/students/${id}`) 
             .then( result => result.data)
@@ -114,5 +117,5 @@ export const deleteStudent = (id, history)=> {
 };
 
 //STORE
-const store = createStore(reducer, applyMiddleware(thunk));
+const store = createStore(reducer, applyMiddleware(thunk, createLogger));
 export default store;

@@ -87,6 +87,9 @@ const Student = conn.define('student', {
     GPA: {
         type: Sequelize.DECIMAL,
         },
+    imageURL: {
+        type: Sequelize.STRING,
+        },
     },{
     getterMethods: {
         fullName:  function() {
@@ -102,11 +105,13 @@ const Student = conn.define('student', {
 Student.belongsTo(School)
 School.hasMany(Student)
 
+const defaultImage = ''
+
 conn.sync({ force: true })
     .then( ()=> Promise.all([
-        Student.create({firstName: 'Anna', lastName: 'McGrane', GPA: 6, email: 'anna@nyu.edu'}),
-        Student.create({firstName: 'Gavin', lastName: 'McGrane', GPA: 8, email: 'gavin@lowell.edu'}),
-        Student.create({firstName: 'Sally', lastName: 'McGrane', GPA: 7, email: 'sally@ucb.edu'}),
+        Student.create({firstName: 'Anna', lastName: 'May', GPA: 6, email: 'anna@nyu.edu', imageURL: 'as'}),
+        Student.create({firstName: 'Gavin', lastName: 'Harry', GPA: 8, email: 'gavin@lowell.edu', imageURL: 'ab'}),
+        Student.create({firstName: 'Sally', lastName: 'Jeanne', GPA: 7, email: 'sally@ucb.edu', imageURL: 'ac'}),
         School.create({ name: 'NYU', imageURL: ''}),
         School.create({ name: 'Lowell', imageURL: ''}),
         School.create({ name: 'UCB', imageURL: ''})
