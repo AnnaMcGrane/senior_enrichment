@@ -1158,6 +1158,210 @@ var createPath = function createPath(location) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.deleteSchool = exports.deleteStudent = exports.newStudent = exports.saveSchool = exports.saveStudent = exports.loadSchools = exports.loadStudents = undefined;
+
+var _redux = __webpack_require__(36);
+
+var _axios = __webpack_require__(120);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+var _reduxThunk = __webpack_require__(139);
+
+var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
+
+var _reduxLogger = __webpack_require__(140);
+
+var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//STUDENT ACTIONS
+var SET_STUDENTS = 'SET_STUDENTS';
+var UPDATE_STUDENT = 'UPDATE_STUDENT';
+var DELETE_STUDENT = 'DELETE_STUDENT';
+var CREATE_STUDENT = 'CREATE_STUDENT';
+
+//SCHOOL ACTIONS
+var SET_SCHOOLS = 'SET_SCHOOLS';
+var UPDATE_SCHOOL = 'SAVE_SCHOOL';
+var DELETE_SCHOOL = 'DELETE_SCHOOL';
+
+//REDUCERS
+var studentsReducer = function studentsReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case SET_STUDENTS:
+            state = action.students;
+            break;
+        case UPDATE_STUDENT:
+            state = state.map(function (student) {
+                return student.id === action.student.id ? action.student : student;
+            });
+            break;
+        case DELETE_STUDENT:
+            state = state.filter(function (student) {
+                return student.id !== action.student.id;
+            });
+            break;
+        case CREATE_STUDENT:
+            state = [].concat(_toConsumableArray(state), [action.student]);
+            break;
+    }
+    return state;
+};
+
+var schoolsReducer = function schoolsReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+    var action = arguments[1];
+
+    switch (action.type) {
+        case SET_SCHOOLS:
+            state = action.schools;
+            break;
+        case DELETE_SCHOOL:
+            state = state.filter(function (school) {
+                return school.id !== action.school.id;
+            });
+            break;
+        case UPDATE_SCHOOL:
+            state = state.map(function (schoool) {
+                return school.id === action.school.id ? action.school : school;
+            });
+    }
+    return state;
+};
+
+var reducer = (0, _redux.combineReducers)({
+    students: studentsReducer,
+    schools: schoolsReducer
+});
+
+//AXIOS CALLS  
+var loadStudents = exports.loadStudents = function loadStudents() {
+    return function (dispatch) {
+        return _axios2.default.get('/api/students').then(function (result) {
+            return result.data;
+        }).then(function (students) {
+            return dispatch({
+                type: SET_STUDENTS,
+                students: students
+            });
+        });
+    };
+};
+
+var loadSchools = exports.loadSchools = function loadSchools() {
+    return function (dispatch) {
+        return _axios2.default.get('/api/schools').then(function (result) {
+            return result.data;
+        }).then(function (schools) {
+            return dispatch({
+                type: SET_SCHOOLS,
+                schools: schools
+            });
+        });
+    };
+};
+//MODIFY EXISTING
+var saveStudent = exports.saveStudent = function saveStudent(student, history) {
+    if (student.id) {
+        return function (dispatch) {
+            return _axios2.default.put('/api/students/' + student.id, student).then(function (result) {
+                return result.data;
+            }).then(function (student) {
+                return dispatch({
+                    type: UPDATE_STUDENT,
+                    student: student
+                });
+            }).then(function () {
+                history.push('/students');
+            });
+        };
+    }
+};
+
+var saveSchool = exports.saveSchool = function saveSchool(school, history) {
+    if (school.id) {
+        return function (dispatch) {
+            return _axios2.default.put('/api/schools/' + school.id, school).then(function (result) {
+                return result.data;
+            }).then(function (school) {
+                return dispatch({
+                    type: UPDATE_STUDENT,
+                    school: school
+                });
+            }).then(function () {
+                history.push('/schools');
+            });
+        };
+    }
+};
+//CREATE NEW
+var newStudent = exports.newStudent = function newStudent(student, history) {
+    return function (dispatch) {
+        return _axios2.default.post('/api/students', student).then(function (result) {
+            return result.data;
+        }).then(function (student) {
+            return dispatch({
+                type: CREATE_STUDENT,
+                student: student
+            });
+        }).then(function () {
+            history.push('/students');
+        });
+    };
+};
+
+//DELETE
+var deleteStudent = exports.deleteStudent = function deleteStudent(id, history) {
+    return function (dispatch) {
+        return _axios2.default.delete('/api/students/' + id).then(function (result) {
+            return result.data;
+        }).then(function () {
+            return dispatch({
+                type: DELETE_STUDENT,
+                student: { id: id }
+            });
+        }).then(function () {
+            return history.push('/');
+        });
+    };
+};
+
+var deleteSchool = exports.deleteSchool = function deleteSchool(id, history) {
+    return function (dispatch) {
+        return _axios2.default.delete('/api/schools/' + id).then(function (result) {
+            return result.data;
+        }).then(function () {
+            return dispatch({
+                type: DELETE_SCHOOL,
+                school: { id: id }
+            });
+        }).then(function () {
+            return history.push('/');
+        });
+    };
+};
+
+//STORE
+var store = (0, _redux.createStore)(reducer, (0, _redux.applyMiddleware)(_reduxThunk2.default, _reduxLogger2.default));
+exports.default = store;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -1178,7 +1382,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1247,7 +1451,7 @@ module.exports = warning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1323,168 +1527,6 @@ var locationsAreEqual = function locationsAreEqual(a, b) {
 };
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.deleteStudent = exports.newStudent = exports.saveStudent = exports.loadSchools = exports.loadStudents = undefined;
-
-var _redux = __webpack_require__(36);
-
-var _axios = __webpack_require__(120);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-var _reduxThunk = __webpack_require__(139);
-
-var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
-
-var _reduxLogger = __webpack_require__(140);
-
-var _reduxLogger2 = _interopRequireDefault(_reduxLogger);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-//STUDENT ACTIONS
-var SET_STUDENTS = 'SET_STUDENTS';
-var UPDATE_STUDENT = 'UPDATE_STUDENT';
-var DELETE_STUDENT = 'DELETE_STUDENT';
-var CREATE_STUDENT = 'CREATE_STUDENT';
-
-//SCHOOL ACTIONS
-var SET_SCHOOLS = 'SET_SCHOOLS';
-
-//REDUCERS
-var studentsReducer = function studentsReducer() {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var action = arguments[1];
-
-    switch (action.type) {
-        case SET_STUDENTS:
-            state = action.students;
-            break;
-        case UPDATE_STUDENT:
-            state = state.map(function (student) {
-                return student.id === action.student.id ? action.student : student;
-            });
-            break;
-        case DELETE_STUDENT:
-            state = state.filter(function (student) {
-                return student.id !== action.student.id;
-            });
-            break;
-        case CREATE_STUDENT:
-            state = [].concat(_toConsumableArray(state), [action.student]);
-            break;
-    }
-    return state;
-};
-
-var schoolsReducer = function schoolsReducer() {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    var action = arguments[1];
-
-    switch (action.type) {
-        case SET_SCHOOLS:
-            state = action.schools;
-            break;
-    }
-    return state;
-};
-
-var reducer = (0, _redux.combineReducers)({
-    students: studentsReducer,
-    schools: schoolsReducer
-});
-
-//AXIOS CALLS  
-var loadStudents = exports.loadStudents = function loadStudents() {
-    return function (dispatch) {
-        return _axios2.default.get('/api/students').then(function (result) {
-            return result.data;
-        }).then(function (students) {
-            return dispatch({
-                type: SET_STUDENTS,
-                students: students
-            });
-        });
-    };
-};
-
-var loadSchools = exports.loadSchools = function loadSchools() {
-    return function (dispatch) {
-        return _axios2.default.get('/api/schools').then(function (result) {
-            return result.data;
-        }).then(function (schools) {
-            return dispatch({
-                type: SET_SCHOOLS,
-                schools: schools
-            });
-        });
-    };
-};
-//MODIFY AN EXISTING STUDENT (SHOULD RENAME THIS BC SAVE IS UNCLEAR)
-var saveStudent = exports.saveStudent = function saveStudent(student, history) {
-    if (student.id) {
-        return function (dispatch) {
-            return _axios2.default.put('/api/students/' + student.id, student).then(function (result) {
-                return result.data;
-            }).then(function (student) {
-                return dispatch({
-                    type: UPDATE_STUDENT,
-                    student: student
-                });
-            }).then(function () {
-                history.push('/students');
-            });
-        };
-    }
-};
-//CREATE A NEW STUDENT
-var newStudent = exports.newStudent = function newStudent(student, history) {
-    return function (dispatch) {
-        return _axios2.default.post('/api/students', student).then(function (result) {
-            return result.data;
-        }).then(function (student) {
-            return dispatch({
-                type: CREATE_STUDENT,
-                student: student
-            });
-        }).then(function () {
-            history.push('/students');
-        });
-    };
-};
-
-//DELETE
-var deleteStudent = exports.deleteStudent = function deleteStudent(id, history) {
-    console.log(id, 'deleteStudent from store');
-    return function (dispatch) {
-        return _axios2.default.delete('/api/students/' + id).then(function (result) {
-            return result.data;
-        }).then(function () {
-            return dispatch({
-                type: 'DELETE_STUDENT',
-                student: { id: id }
-            });
-        }).then(function () {
-            return history.push('/');
-        });
-    };
-};
-
-//STORE
-var store = (0, _redux.createStore)(reducer, (0, _redux.applyMiddleware)(_reduxThunk2.default, _reduxLogger2.default));
-exports.default = store;
-
-/***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1500,7 +1542,7 @@ exports.default = store;
 
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(9);
-  var warning = __webpack_require__(14);
+  var warning = __webpack_require__(15);
   var ReactPropTypesSecret = __webpack_require__(18);
   var loggedTypeFailures = {};
 }
@@ -4150,7 +4192,7 @@ var _App = __webpack_require__(92);
 
 var _App2 = _interopRequireDefault(_App);
 
-var _store = __webpack_require__(16);
+var _store = __webpack_require__(13);
 
 var _store2 = _interopRequireDefault(_store);
 
@@ -4178,7 +4220,7 @@ _reactDom2.default.render(_react2.default.createElement(
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(8),n=__webpack_require__(13),p=__webpack_require__(6),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.portal"):60106,u=q?Symbol["for"]("react.fragment"):60107,v=q?Symbol["for"]("react.strict_mode"):60108,w=q?Symbol["for"]("react.provider"):60109,x=q?Symbol["for"]("react.context"):60110,y=q?Symbol["for"]("react.async_mode"):60111,z=q?Symbol["for"]("react.forward_ref"):60112,A="function"===
+var m=__webpack_require__(8),n=__webpack_require__(14),p=__webpack_require__(6),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.portal"):60106,u=q?Symbol["for"]("react.fragment"):60107,v=q?Symbol["for"]("react.strict_mode"):60108,w=q?Symbol["for"]("react.provider"):60109,x=q?Symbol["for"]("react.context"):60110,y=q?Symbol["for"]("react.async_mode"):60111,z=q?Symbol["for"]("react.forward_ref"):60112,A="function"===
 typeof Symbol&&Symbol.iterator;function B(a){for(var b=arguments.length-1,e="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);b=Error(e+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}
 var C={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};function D(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||C}D.prototype.isReactComponent={};D.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?B("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};D.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};function E(){}
 E.prototype=D.prototype;function F(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||C}var G=F.prototype=new E;G.constructor=F;m(G,D.prototype);G.isPureReactComponent=!0;var H={current:null},I=Object.prototype.hasOwnProperty,J={key:!0,ref:!0,__self:!0,__source:!0};
@@ -4216,9 +4258,9 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var _assign = __webpack_require__(8);
-var emptyObject = __webpack_require__(13);
+var emptyObject = __webpack_require__(14);
 var invariant = __webpack_require__(9);
-var warning = __webpack_require__(14);
+var warning = __webpack_require__(15);
 var emptyFunction = __webpack_require__(6);
 var checkPropTypes = __webpack_require__(17);
 
@@ -5673,7 +5715,7 @@ if (process.env.NODE_ENV === 'production') {
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var ba=__webpack_require__(0),m=__webpack_require__(29),A=__webpack_require__(8),C=__webpack_require__(6),ea=__webpack_require__(30),fa=__webpack_require__(31),ha=__webpack_require__(32),ja=__webpack_require__(13);
+var ba=__webpack_require__(0),m=__webpack_require__(29),A=__webpack_require__(8),C=__webpack_require__(6),ea=__webpack_require__(30),fa=__webpack_require__(31),ha=__webpack_require__(32),ja=__webpack_require__(14);
 function D(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}ba?void 0:D("227");
 function ka(a,b,c,d,e,f,h,g,k){this._hasCaughtError=!1;this._caughtError=null;var v=Array.prototype.slice.call(arguments,3);try{b.apply(c,v)}catch(l){this._caughtError=l,this._hasCaughtError=!0}}
 var E={_caughtError:null,_hasCaughtError:!1,_rethrowError:null,_hasRethrowError:!1,invokeGuardedCallback:function(a,b,c,d,e,f,h,g,k){ka.apply(E,arguments)},invokeGuardedCallbackAndCatchFirstError:function(a,b,c,d,e,f,h,g,k){E.invokeGuardedCallback.apply(this,arguments);if(E.hasCaughtError()){var v=E.clearCaughtError();E._hasRethrowError||(E._hasRethrowError=!0,E._rethrowError=v)}},rethrowCaughtError:function(){return ma.apply(E,arguments)},hasCaughtError:function(){return E._hasCaughtError},clearCaughtError:function(){if(E._hasCaughtError){var a=
@@ -5988,7 +6030,7 @@ if (process.env.NODE_ENV !== "production") {
 
 var React = __webpack_require__(0);
 var invariant = __webpack_require__(9);
-var warning = __webpack_require__(14);
+var warning = __webpack_require__(15);
 var ExecutionEnvironment = __webpack_require__(29);
 var _assign = __webpack_require__(8);
 var emptyFunction = __webpack_require__(6);
@@ -5996,7 +6038,7 @@ var checkPropTypes = __webpack_require__(17);
 var getActiveElement = __webpack_require__(30);
 var shallowEqual = __webpack_require__(31);
 var containsNode = __webpack_require__(32);
-var emptyObject = __webpack_require__(13);
+var emptyObject = __webpack_require__(14);
 var hyphenateStyleName = __webpack_require__(63);
 var camelizeStyleName = __webpack_require__(65);
 
@@ -22854,7 +22896,7 @@ function createProvider() {
 
 var emptyFunction = __webpack_require__(6);
 var invariant = __webpack_require__(9);
-var warning = __webpack_require__(14);
+var warning = __webpack_require__(15);
 var assign = __webpack_require__(8);
 
 var ReactPropTypesSecret = __webpack_require__(18);
@@ -24554,7 +24596,7 @@ var _Schools = __webpack_require__(144);
 
 var _Schools2 = _interopRequireDefault(_Schools);
 
-var _store = __webpack_require__(16);
+var _store = __webpack_require__(13);
 
 var _store2 = _interopRequireDefault(_store);
 
@@ -26415,7 +26457,7 @@ Redirect.contextTypes = {
 /* unused harmony reexport createHashHistory */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createMemoryHistory__ = __webpack_require__(110);
 /* unused harmony reexport createMemoryHistory */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LocationUtils__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__LocationUtils__ = __webpack_require__(16);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_3__LocationUtils__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_3__LocationUtils__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PathUtils__ = __webpack_require__(12);
@@ -26440,7 +26482,7 @@ Redirect.contextTypes = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(49);
@@ -26744,7 +26786,7 @@ var createBrowserHistory = function createBrowserHistory() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_invariant___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_invariant__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PathUtils__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__createTransitionManager__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__DOMUtils__ = __webpack_require__(49);
@@ -27064,7 +27106,7 @@ var createHashHistory = function createHashHistory() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_warning___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_warning__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PathUtils__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__LocationUtils__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__createTransitionManager__ = __webpack_require__(27);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -27666,7 +27708,7 @@ var _reactRedux = __webpack_require__(7);
 
 var _reactRouterDom = __webpack_require__(10);
 
-var _store = __webpack_require__(16);
+var _store = __webpack_require__(13);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27693,11 +27735,11 @@ var Student = function (_React$Component) {
         _this.onChangeSchool = _this.onChangeSchool.bind(_this);
 
         _this.state = {
-            firstName: student.firstName ? student.firstName : 'enter',
-            lastName: student.lastName ? student.lastName : 'enter',
-            email: student.email ? student.email : 'enter',
+            firstName: student.firstName ? student.firstName : '',
+            lastName: student.lastName ? student.lastName : '',
+            email: student.email ? student.email : '@',
             GPA: student.GPA ? student.GPA : '4.0',
-            imageURL: student.imageURL ? student.imageURL : 'enter',
+            imageURL: student.imageURL ? student.imageURL : '',
             schoolId: student.schoolId ? student.schoolId : 3
         };
         return _this;
@@ -27744,8 +27786,9 @@ var Student = function (_React$Component) {
         //     console.log(nextProps, 'from componentwillreceiveprops')
         // }
 
-        //RENDER IS TWO PARTS: FIRST PART LINKS TO AN INDIVIDUAL STUDENT PAGE
-        //SECOND PART LINKS TO A CREATE STUDENT PAGE. SHOULD HAVE PUT THIS IN A SEPARATE COMPONENT
+        //RENDER IS TWO PARTS: 
+        //FIRST PART LINKS TO AN INDIVIDUAL STUDENT PAGE
+        //SECOND PART LINKS TO A CREATE STUDENT PAGE. 
 
     }, {
         key: 'render',
@@ -28920,7 +28963,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(7);
 
-var _store = __webpack_require__(16);
+var _store = __webpack_require__(13);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29186,6 +29229,12 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(7);
 
+var _store = __webpack_require__(13);
+
+var _Students = __webpack_require__(141);
+
+var _Students2 = _interopRequireDefault(_Students);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29197,43 +29246,143 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var School = function (_React$Component) {
     _inherits(School, _React$Component);
 
-    function School(student) {
+    function School(school) {
         _classCallCheck(this, School);
 
         var _this = _possibleConstructorReturn(this, (School.__proto__ || Object.getPrototypeOf(School)).call(this));
 
+        _this.onSave = _this.onSave.bind(_this);
+        _this.onDelete = _this.onDelete.bind(_this);
+        _this.onChangeName = _this.onChangeName.bind(_this);
+        _this.enrollStudent = _this.enrollStudent.bind(_this);
+
         _this.state = {
-            firstName: ''
+            name: school.name ? school.name : '',
+            imageURL: school.imageURL ? school.imageURL : '',
+            student: ''
+            // fullName: student.fullName
         };
         return _this;
     }
 
     _createClass(School, [{
+        key: 'onSave',
+        value: function onSave(ev) {
+            ev.preventDefault();
+            // const student = this.props.students.find(student => student.fullName === fullName)
+            this.props.saveStudent(this.state.student);
+        }
+    }, {
+        key: 'onDelete',
+        value: function onDelete(ev) {
+            this.props.deleteSchool({ id: this.props.id });
+        }
+    }, {
+        key: 'onChangeName',
+        value: function onChangeName(ev) {
+            this.setState({ name: ev.target.value });
+        }
+    }, {
+        key: 'enrollStudent',
+        value: function enrollStudent(ev) {
+            var _this2 = this;
+
+            var studentId = +ev.target.value;
+            console.log(this.props.studentNotEnrolled);
+            var student = this.props.studentNotEnrolled.find(function (student) {
+                return student.id === studentId;
+            });
+            console.log(student, 'enroll');
+            console.log(this.props.id, 'id is here');
+            var studentWithNewSchoolId = function studentWithNewSchoolId(student) {
+                student.schoolId = _this2.props.id;
+                return student;
+            };
+
+            this.setState({ student: studentWithNewSchoolId });
+        }
+    }, {
         key: 'render',
         value: function render() {
-            var students = this.props.students;
+            var _props = this.props,
+                students = _props.students,
+                studentNotEnrolled = _props.studentNotEnrolled,
+                school = _props.school,
+                schools = _props.schools;
 
-            return _react2.default.createElement(
-                'div',
-                null,
-                _react2.default.createElement(
-                    'ul',
+            if (school) {
+                return _react2.default.createElement(
+                    'div',
                     null,
                     _react2.default.createElement(
-                        'h3',
+                        'ul',
                         null,
-                        ' Students attending this school are: '
+                        _react2.default.createElement(
+                            'h3',
+                            null,
+                            ' Students attending ',
+                            school.name,
+                            ' are: '
+                        ),
+                        students.map(function (student) {
+                            return _react2.default.createElement(
+                                'li',
+                                { key: student.id },
+                                ' ',
+                                student.firstName,
+                                ' '
+                            );
+                        })
                     ),
-                    students.map(function (student) {
-                        return _react2.default.createElement(
-                            'li',
-                            { key: student.id },
-                            ' ',
-                            student.firstName
-                        );
-                    })
-                )
-            );
+                    _react2.default.createElement(
+                        'form',
+                        { onSubmit: this.onSave },
+                        _react2.default.createElement(
+                            'ul',
+                            null,
+                            _react2.default.createElement(
+                                'select',
+                                { onChange: this.enrollStudent },
+                                _react2.default.createElement(
+                                    'option',
+                                    null,
+                                    ' None '
+                                ),
+                                studentNotEnrolled.map(function (student) {
+                                    return _react2.default.createElement(
+                                        'option',
+                                        { value: student.id },
+                                        ' ',
+                                        student.fullName
+                                    );
+                                })
+                            ),
+                            _react2.default.createElement(
+                                'button',
+                                { type: 'submit', className: 'btn btn-primary btn-sm' },
+                                ' Enroll New Student '
+                            )
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'ul',
+                        null,
+                        _react2.default.createElement(
+                            'button',
+                            { type: 'button', className: 'btn btn-secondary btn-sm', onClick: this.onDelete },
+                            ' Close ',
+                            school.name,
+                            ' '
+                        )
+                    )
+                );
+            } else {
+                return _react2.default.createElement(
+                    'h2',
+                    null,
+                    ' School updated '
+                );
+            }
         }
     }]);
 
@@ -29241,18 +29390,42 @@ var School = function (_React$Component) {
 }(_react2.default.Component);
 
 var mapStateToProps = function mapStateToProps(_ref, _ref2) {
-    var students = _ref.students;
+    var students = _ref.students,
+        schools = _ref.schools;
     var id = _ref2.id;
 
     var _students = students.filter(function (student) {
         return student.schoolId === id;
     });
+    var studentNotEnrolled = students.filter(function (student) {
+        return student.schoolId !== id;
+    });
+    var school = schools.find(function (school) {
+        return school.id === id;
+    });
+
     return {
+        school: school,
+        schools: schools,
+        studentNotEnrolled: studentNotEnrolled,
         students: _students
     };
 };
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(School);
+var mapDispatchToProps = function mapDispatchToProps(dispatch, _ref3) {
+    var history = _ref3.history;
+
+    return {
+        saveStudent: function saveStudent(student) {
+            return dispatch((0, _store.saveStudent)(student, history));
+        },
+        deleteSchool: function deleteSchool(school) {
+            return dispatch((0, _store.deleteSchool)(school.id, history));
+        }
+    };
+};
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(School);
 
 /***/ }),
 /* 144 */
@@ -29281,6 +29454,11 @@ var Schools = function Schools(_ref) {
     return _react2.default.createElement(
         'ul',
         null,
+        _react2.default.createElement(
+            'h2',
+            null,
+            ' Schools '
+        ),
         schools.map(function (school) {
             return _react2.default.createElement(
                 'li',

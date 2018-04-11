@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 const Schools = ({ schools }) => {
     return (
         <ul>
+        <h2> Schools </h2>
         {
             schools.map( school => {
                 return (

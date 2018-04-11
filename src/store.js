@@ -11,6 +11,8 @@ const CREATE_STUDENT = 'CREATE_STUDENT'
 
 //SCHOOL ACTIONS
 const SET_SCHOOLS = 'SET_SCHOOLS'
+const UPDATE_SCHOOL = 'SAVE_SCHOOL'
+const DELETE_SCHOOL = 'DELETE_SCHOOL'
 
 //REDUCERS
 const studentsReducer = (state = [], action)=> {
@@ -36,6 +38,11 @@ const schoolsReducer = (state=[], action)=> {
         case SET_SCHOOLS:
           state = action.schools
           break 
+        case DELETE_SCHOOL:
+          state = state.filter( school => school.id !== action.school.id)
+          break 
+        case UPDATE_SCHOOL: 
+          state = state.map(schoool => school.id === action.school.id ? action.school : school)
     }
     return state
 }
@@ -69,7 +76,7 @@ export const loadSchools = ()=> {
         )
     }
 }
-//MODIFY AN EXISTING STUDENT (SHOULD RENAME THIS BC SAVE IS UNCLEAR)
+//MODIFY EXISTING
 export const saveStudent = (student, history)=> {
     if(student.id){
         return(dispatch)=> {
@@ -86,7 +93,24 @@ export const saveStudent = (student, history)=> {
         }
     }
 }
-//CREATE A NEW STUDENT
+
+export const saveSchool = (school, history)=> {
+    if(school.id){
+        return(dispatch)=> {
+            return axios.put(`/api/schools/${school.id}`, school)
+                .then(result => result.data)
+                .then(school => dispatch({
+                    type: UPDATE_STUDENT,
+                    school
+                })
+            )
+            .then ( ()=> {
+                history.push('/schools')
+            })
+        }
+    }
+}
+//CREATE NEW
 export const newStudent = (student, history)=> {
     return(dispatch) => {
         return axios.post('/api/students', student)
@@ -104,13 +128,24 @@ export const newStudent = (student, history)=> {
 
 //DELETE
 export const deleteStudent = (id, history)=> {
-    console.log(id, 'deleteStudent from store')
     return (dispatch)=> {
         return axios.delete(`/api/students/${id}`) 
             .then( result => result.data)
             .then( () => dispatch({
-                type: 'DELETE_STUDENT',
+                type: DELETE_STUDENT,
                 student: { id  }
+      }))
+      .then( ()=> history.push('/'));
+    }
+};
+
+export const deleteSchool = (id, history)=> {
+    return (dispatch)=> {
+        return axios.delete(`/api/schools/${id}`) 
+            .then( result => result.data)
+            .then( () => dispatch({
+                type: DELETE_SCHOOL,
+                school: { id  }
       }))
       .then( ()=> history.push('/'));
     }

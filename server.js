@@ -41,11 +41,38 @@ app.put('/api/students/:id', (req, res, next)=> {
       .catch(next);
   })
 
-//PORT
 
-const port = process.env.PORT || 3000;
-app.listen(port, ()=> console.log(`listening on port ${port}`));
-
+//ROUTES - SCHOOL
+app.get('/api/schools', (req, res, next)=> {
+    School.findAll()
+      .then( schools => res.send(schools))
+      .catch(next);
+})
+  
+app.put('/api/schools/:id', (req, res, next)=> {
+    School.findById(req.params.id)
+      .then( school => {
+        Object.assign(school, req.body)
+        return school.save();
+      })
+      .then( school => res.send(school))
+      .catch(next);
+})
+  
+app.delete('/api/schools/:id', (req, res, next)=> {
+    School.findById(req.params.id)
+      .then( school => {
+        return school.destroy();
+      })
+      .then( () => res.sendStatus(204))
+      .catch(next);
+})
+  
+app.post('/api/schools', (req, res, next)=> {
+    School.create(req.body)
+      .then( school => res.send(school))
+      .catch(next);
+})
 
 //SEQUELIZE
 const Sequelize = require('sequelize');
@@ -57,7 +84,7 @@ const School = conn.define('school', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  image: {
+  imageURL: {
     type: Sequelize.STRING
   }
 });
@@ -98,14 +125,11 @@ const Student = conn.define('student', {
     },
 })
 
-
-
 //SYNC AND SEED THE DATABASE
 
 Student.belongsTo(School)
 School.hasMany(Student)
 
-const defaultImage = ''
 
 conn.sync({ force: true })
     .then( ()=> Promise.all([
@@ -124,36 +148,7 @@ conn.sync({ force: true })
         ])     
     }))
 
-// why doesn't my db update? doesn't force: true force reload? so I could add categories
+//PORT
 
-//ROUTES - SCHOOL
-app.get('/api/schools', (req, res, next)=> {
-    School.findAll()
-      .then( schools => res.send(schools))
-      .catch(next);
-})
-  
-app.put('/api/schools/:id', (req, res, next)=> {
-    School.findById(req.params.id)
-      .then( school => {
-        Object.assign(school, req.body)
-        return school.save();
-      })
-      .then( school => res.send(school))
-      .catch(next);
-})
-  
-app.delete('/api/schools/:id', (req, res, next)=> {
-    School.findById(req.params.id)
-      .then( school => {
-        return school.destroy();
-      })
-      .then( () => res.sendStatus(204))
-      .catch(next);
-})
-  
-app.post('/api/schools', (req, res, next)=> {
-    School.create(req.body)
-      .then( school => res.send(school))
-      .catch(next);
-})
+const port = process.env.PORT || 3000;
+app.listen(port, ()=> console.log(`listening on port ${port}`));

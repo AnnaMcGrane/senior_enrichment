@@ -17,11 +17,11 @@ class Student extends React.Component {
         this.onChangeSchool = this.onChangeSchool.bind(this)
         
         this.state = {
-            firstName: student.firstName ? student.firstName : 'enter',
-            lastName: student.lastName ? student.lastName : 'enter',
-            email: student.email ? student.email : 'enter',
+            firstName: student.firstName ? student.firstName : '',
+            lastName: student.lastName ? student.lastName : '',
+            email: student.email ? student.email : '@',
             GPA: student.GPA ? student.GPA : '4.0', 
-            imageURL: student.imageURL ? student.imageURL : 'enter',
+            imageURL: student.imageURL ? student.imageURL : '',
             schoolId: student.schoolId ? student.schoolId : 3 
         }
     }
@@ -52,8 +52,9 @@ class Student extends React.Component {
     //     console.log(nextProps, 'from componentwillreceiveprops')
     // }
     
-    //RENDER IS TWO PARTS: FIRST PART LINKS TO AN INDIVIDUAL STUDENT PAGE
-    //SECOND PART LINKS TO A CREATE STUDENT PAGE. SHOULD HAVE PUT THIS IN A SEPARATE COMPONENT
+    //RENDER IS TWO PARTS: 
+    //FIRST PART LINKS TO AN INDIVIDUAL STUDENT PAGE
+    //SECOND PART LINKS TO A CREATE STUDENT PAGE. 
     
     render(){
         const { student, students, id, schools } = this.props
