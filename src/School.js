@@ -1,11 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { deleteSchool, saveStudent } from './store'
+import { deleteSchool, saveStudent, saveStudents } from './store'
 import Students from './Students';
 
 class School extends React.Component{
-    constructor(school){
+    constructor(school, students){
         super()
         
         this.onSave = this.onSave.bind(this)
@@ -16,34 +16,28 @@ class School extends React.Component{
         this.state = {
             name : school.name ? school.name : '',
             imageURL: school.imageURL ? school.imageURL : '',
-            student: ''
-            // fullName: student.fullName
+            student: '',
+            // students: []
         }
     }
     onSave(ev){
         ev.preventDefault()
-        // const student = this.props.students.find(student => student.fullName === fullName)
         this.props.saveStudent(this.state.student)
+        // this.props.saveStudents(this.state.students)
     }
-    onDelete(ev){
+    onDelete(){
         this.props.deleteSchool({ id: this.props.id })
-    }
+        // const students = this.props.students.map(student => student.schoolId = 1)
+        // this.setState({students: students})
+    } 
     onChangeName(ev){
         this.setState({ name: ev.target.value })
     }
     enrollStudent(ev){
-
         const studentId = +ev.target.value
-        console.log(this.props.studentNotEnrolled)
         const student = this.props.studentNotEnrolled.find(student => student.id === studentId)
-        console.log(student,'enroll')
-        console.log(this.props.id, 'id is here')
-        const studentWithNewSchoolId = (student)=> {
-            student.schoolId = this.props.id 
-            return student;
-        }
-       
-        this.setState({ student: studentWithNewSchoolId })
+        student.schoolId = this.props.id
+        this.setState({ student: student })
     }
 
     render(){
@@ -51,7 +45,7 @@ class School extends React.Component{
         if (school) {
             return (
                 <div> 
-                    <ul> 
+                    <ul>
                         <h3> Students attending {school.name} are: </h3>
                        {
                            students.map (student => <li key={ student.id }> { student.firstName } </li>)
@@ -69,7 +63,7 @@ class School extends React.Component{
                     </ul>
                 </form>
                 <ul>
-                    <button type="button" className="btn btn-secondary btn-sm" onClick = { this.onDelete }> Close {school.name} </button>
+                    <button type='button' className="btn btn-secondary btn-sm" onClick = { this.onDelete }> Close {school.name} </button>
                 </ul>
                 </div>
             )
@@ -84,7 +78,7 @@ class School extends React.Component{
 
 
 const mapStateToProps = ({ students, schools }, { id }) => {
-    const _students = students.filter(student => student.schoolId === id)
+    const _students= students.filter(student => student.schoolId === id)
     const studentNotEnrolled = students.filter(student => student.schoolId !== id)
     const school = schools.find(school => school.id === id)
     
@@ -92,7 +86,8 @@ const mapStateToProps = ({ students, schools }, { id }) => {
        school: school,  
        schools: schools,
        studentNotEnrolled: studentNotEnrolled,
-       students: _students
+       students: _students,
+       allStudents: students
     }
 }
 
@@ -100,6 +95,7 @@ const mapDispatchToProps = (dispatch, { history }) => {
     return {
         saveStudent: (student) => dispatch(saveStudent(student, history)),
         deleteSchool: (school) => dispatch(deleteSchool(school.id, history)),
+        // saveStudents: (students) => dispatch(saveStudents(students, history))
     }
 }
 

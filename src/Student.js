@@ -22,11 +22,10 @@ class Student extends React.Component {
             email: student.email ? student.email : '@',
             GPA: student.GPA ? student.GPA : '4.0', 
             imageURL: student.imageURL ? student.imageURL : '',
-            schoolId: student.schoolId ? student.schoolId : 3 
+            schoolId: student.schoolId ? student.schoolId : 1 
         }
     }
     onSave(ev){
-
         ev.preventDefault()
         const student = { id: this.props.id, firstName: this.state.firstName, lastName: this.state.lastName, email: this.state.email, GPA: this.state.GPA, imageURL: this.state.imageURL, schoolId: this.state.schoolId}
         this.props.saveStudent(student)
@@ -64,7 +63,7 @@ class Student extends React.Component {
             return (
                 <div>
                 <ul>
-                <h3>{ student.fullName }, schoolId {schoolId}, GPA {GPA}</h3>
+                <h3>{ student.fullName }</h3>
                 <h4> Edit { student.firstName }'s info here </h4>
                     <form onSubmit ={ this.onSave }>
                         <li key= { student.firstName } > 

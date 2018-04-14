@@ -37,7 +37,7 @@ app.put('/api/students/:id', (req, res, next)=> {
   
   app.post('/api/students', (req, res, next)=> {
     Student.create(req.body)
-      .then( student => res.send(student))
+      .then(student => res.send(student))
       .catch(next);
   })
 
@@ -136,11 +136,12 @@ conn.sync({ force: true })
         Student.create({firstName: 'Anna', lastName: 'May', GPA: 6, email: 'anna@nyu.edu', imageURL: 'as'}),
         Student.create({firstName: 'Gavin', lastName: 'Harry', GPA: 8, email: 'gavin@lowell.edu', imageURL: 'ab'}),
         Student.create({firstName: 'Sally', lastName: 'Jeanne', GPA: 7, email: 'sally@ucb.edu', imageURL: 'ac'}),
+        School.create({name: 'Students to be enrolled', imageURL: ''}),
         School.create({ name: 'NYU', imageURL: ''}),
         School.create({ name: 'Lowell', imageURL: ''}),
         School.create({ name: 'UCB', imageURL: ''})
         ])
-    .then(([anna, gavin, sally, nyu, lowell, ucb ]) => {
+    .then(([anna, gavin, sally, students2beEnrolled, nyu, lowell, ucb ]) => {
         return Promise.all([
             anna.setSchool(nyu),
             gavin.setSchool(nyu),

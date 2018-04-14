@@ -94,6 +94,25 @@ export const saveStudent = (student, history)=> {
     }
 }
 
+// export const saveStudents = (students, history)=> {
+//     students.map(student => {
+//         if(student.id){
+//             return(dispatch)=> {
+//                 return axios.put(`/api/students/${student.id}`, student)
+//                     .then(result => result.data)
+//                     .then(student => dispatch({
+//                         type: UPDATE_STUDENT,
+//                         student
+//                     })
+//                 )
+//                 .then ( ()=> {
+//                     history.push('/students')
+//                 })
+//             }
+//         }
+//     })
+// }
+
 export const saveSchool = (school, history)=> {
     if(school.id){
         return(dispatch)=> {
